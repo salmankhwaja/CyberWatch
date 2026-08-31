@@ -9,6 +9,7 @@ A fully self-contained, single-file HTML application. No backend. No build step.
 ## Live Demo
 
 > Deploy to Vercel in 30 seconds — see [Deployment](#deployment) below.
+> One can view the deployed app @ https://cyberwatch-dashboard-tawny.vercel.app
 
 ---
 
