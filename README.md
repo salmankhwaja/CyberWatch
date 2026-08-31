@@ -1,6 +1,6 @@
 # 🛡 CyberWatch v3
 
-**Real-time cybersecurity intelligence dashboard powered by [NewsData.io](https://newsdata.io)**
+**Real-time cybersecurity intelligence dashboard powered by [NewsData.io](https://newsdata.io)** and / or https://github.com/newsdataapi
 
 A fully self-contained, single-file HTML application. No backend. No build step. No dependencies. Open in any browser.
 
