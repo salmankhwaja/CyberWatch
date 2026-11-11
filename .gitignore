@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Generated exports from the dashboard
+output/
+*.csv
+
+# Never commit API keys
+*.env
+.env*
+config.local.*
+
+node_modules/
