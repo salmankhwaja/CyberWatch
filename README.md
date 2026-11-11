@@ -8,9 +8,7 @@ A fully self-contained, single-file HTML application. No backend. No build step.
 
 ## Live Demo
 
-> Deploy to Vercel in 30 seconds — see [Deployment](#deployment) below.
-> 
-> One can view the deployed app @ https://cyberwatch-dashboard-tawny.vercel.app
+> **https://salmankhwaja.github.io/CyberWatch/** — hosted on GitHub Pages. Enter your own NewsData.io API key in the page; it stays in your browser.
 
 ---
 
@@ -81,27 +79,11 @@ python3 -m http.server 8080
 
 ## Deployment
 
-### Vercel (recommended — free, HTTPS, custom domain)
-
-```bash
-# One-time setup
-npm i -g vercel
-
-# From this repo folder
-vercel --prod
-```
-
-That's it. Vercel serves `index.html` as a static site. The NewsData.io API allows browser-direct calls — no proxy needed.
-
-### GitHub Pages
+### GitHub Pages (this repo's hosting)
 
 1. Go to repo **Settings → Pages**
 2. Source: **Deploy from a branch** → `main` → `/ (root)`
-3. Your dashboard will be live at `https://salmankhwaja.github.io/CyberWatch`
-
-### Netlify drag-and-drop
-
-Drag the repo folder onto [app.netlify.com](https://app.netlify.com) — done in 10 seconds.
+3. Your dashboard will be live at `https://salmankhwaja.github.io/CyberWatch/`
 
 ---
 
@@ -126,6 +108,9 @@ with:
 ---
 
 ## Changelog
+
+### v3.4.0 — 2026-11
+- **Docs:** README updated for GitHub Pages hosting; added `index.html` entry point and `.gitignore`
 
 ### v3.3.0 — 2026-08
 - **Fix:** Saved queries now persist correctly — switched from cookies to `localStorage` (cookie 4KB limit was causing silent failures)
