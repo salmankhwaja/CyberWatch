@@ -489,9 +489,10 @@ function upPrev(){
 function catTag(a){const t=((a.title||'')+(a.description||'')).toLowerCase();if(/pci|payment card|card data|magecart|skimming/.test(t))return'pci';if(/breach|leak|gdpr fine|exposed|exfil|unauthorized/.test(t))return'breach';if(/threat|apt|zero.day|cve|malware|ransomware|phish|exploit/.test(t))return'threat';if(/iso 27001|soc 2|nist|compliance|grc|regulation|dora|nis2|governance/.test(t))return'grc';return'cyber';}
 function tAgo(dt){if(!dt)return'';const d=Math.round((new Date()-new Date(dt))/60000);if(d<60)return d+'m ago';if(d<1440)return Math.round(d/60)+'h ago';return Math.round(d/1440)+'d ago';}
 function sentEl(s){if(!s)return'';if(s==='positive')return`<span class="mi sp2">▲ pos</span>`;if(s==='negative')return`<span class="mi sn">▼ neg</span>`;return`<span class="mi snt">● neu</span>`;}
-function hl(text,terms){if(!terms.length||!text)return esc(text);let o=esc(text);terms.forEach(t=>{const e=t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');o=o.replace(new RegExp('('+e+')','gi'),'<mark class="hl">$1</mark>');});return o;}
+function hl(text,terms){if(!terms.length||!text)return esc(text);let o=esc(text);terms.forEach(t=>{const e=t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');o=o.replace(new RegExp('('+esc(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark class="hl">$1</mark>');});return o;}
 function getTerms(){const r=document.getElementById('kwIn').value.trim();return r?r.split(',').map(s=>s.trim()).filter(Boolean):[];}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function safeUrl(u){try{const x=new URL(String(u||''),location.href);return(x.protocol==='https:'||x.protocol==='http:')?x.href:'#';}catch{return'#';}}
 function onQueryEdit(){
   manualEdit=true;
   document.getElementById('qModeBadge').className='qbadge qbadge-man';
@@ -565,7 +566,7 @@ function renderFeed(){
   const terms=getTerms(),fa=filtered();
   const feed=document.getElementById('feed');
   if(!fa.length){feed.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No articles in this category</p></div>`;return;}
-  feed.innerHTML=fa.map(a=>{const cat=catTag(a),url=a.link||a.url||'#';return`<div class="art"><div class="ah"><div class="at">${hl(a.title||'Untitled',terms)}</div><span class="badge ${bCls(cat)}">${cat}</span></div><div class="am"><span class="mi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${tAgo(a.pubDate)}</span>${a.country?`<span class="mi"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${Array.isArray(a.country)?a.country[0]:a.country}</span>`:''}${sentEl(a.sentiment)}</div>${a.description?`<div class="ad">${hl(a.description,terms)}</div>`:''}<div class="af"><span class="stag">${esc(a.source_id||a.source_name||'unknown')}</span><a class="rl2" href="${url}" target="_blank" rel="noopener">Read Article <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div></div>`;}).join('');
+  feed.innerHTML=fa.map(a=>{const cat=catTag(a),url=safeUrl(a.link||a.url);return`<div class="art"><div class="ah"><div class="at">${hl(a.title||'Untitled',terms)}</div><span class="badge ${bCls(cat)}">${cat}</span></div><div class="am"><span class="mi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${tAgo(a.pubDate)}</span>${a.country?`<span class="mi"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(Array.isArray(a.country)?a.country[0]:a.country)}</span>`:''}${sentEl(a.sentiment)}</div>${a.description?`<div class="ad">${hl(a.description,terms)}</div>`:''}<div class="af"><span class="stag">${esc(a.source_id||a.source_name||'unknown')}</span><a class="rl2" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Read Article <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div></div>`;}).join('');
 }
 function tsD(){return new Date().toLocaleTimeString('en-GB',{hour12:false});}
 function dbL(cls,msg){const b=document.getElementById('dbBody');const d=document.createElement('div');d.className='dl '+cls;d.innerHTML=`<span class="dl-ts">[${tsD()}]</span> ${msg}`;b.appendChild(d);b.scrollTop=b.scrollHeight;}
@@ -595,8 +596,8 @@ async function fetchNews(){
     if(!key){showErr('Please enter your NewsData.io API key.');dbL('dl-e','❌ No API key provided.');dbSt('error');return;}
     const kw=document.getElementById('kwIn').value.trim();if(kw)addRec(kw);
     const params=buildParams();
-    dbL('dl-d',`   Mode: ${sm==='title'?'qInTitle':'q (full article)'} · KW: ${kw||'(none)'} · Size: ${params.size}`);
-    Object.entries(params).filter(([k])=>!['language','size','q','qInTitle'].includes(k)).forEach(([k,v])=>dbL('dl-d',`   ${k}: ${v}`));
+    dbL('dl-d',`   Mode: ${sm==='title'?'qInTitle':'q (full article)'} · KW: ${esc(kw||'(none)')} · Size: ${esc(params.size)}`);
+    Object.entries(params).filter(([k])=>!['language','size','q','qInTitle'].includes(k)).forEach(([k,v])=>dbL('dl-d',`   ${esc(k)}: ${esc(v)}`));
     const masked=key.slice(0,6)+'…'+key.slice(-4);
     const qs=new URLSearchParams({...params,apikey:key}).toString();
     url=`https://newsdata.io/api/1/latest?${qs}`;
@@ -604,24 +605,24 @@ async function fetchNews(){
   }
   document.getElementById('feed').innerHTML=`<div class="loading"><span>Fetching intelligence feed…</span></div>`;
   document.getElementById('tabBar').innerHTML='';
-  dbL('dl-i',`🌐 GET <a class="dl-url" href="${url}" target="_blank">${du}</a>`);
+  dbL('dl-i',`🌐 GET <a class="dl-url" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(du)}</a>`);
   if(location.protocol==='file:'){dbL('dl-w','⚠ file:// detected — CORS may block. Fix: python -m http.server 8080 → http://localhost:8080');}
   try{
     const t0=Date.now(),res=await fetch(url),el=Date.now()-t0;
     dbL(res.ok?'dl-ok':'dl-w',`   HTTP ${res.status} ${res.statusText} (${el}ms)`);
     if(res.type==='opaque'){dbL('dl-e','❌ Opaque response — CORS blocked.');showErr('CORS blocked — serve via: python -m http.server 8080');dbSt('error');return;}
     const raw=await res.text();
-    dbL('dl-d',`   Response: ${raw.length} chars${raw.length<1200?' | Preview: '+raw.slice(0,300):''}`);
+    dbL('dl-d',`   Response: ${raw.length} chars${raw.length<1200?' | Preview: '+esc(raw.slice(0,300)):''}`);
     let data;try{data=JSON.parse(raw);}catch(pe){dbL('dl-e','❌ JSON parse failed: '+pe.message);showErr('Invalid JSON response.');dbSt('error');return;}
-    dbL('dl-d',`   status: "${data.status}" · totalResults: ${data.totalResults}`);
-    if(data.status==='error'||data.status==='failure'){const msg=data.results?.message||data.message||'Unknown',code=data.code||'';dbL('dl-e',`❌ API error [${code}]: ${msg}`);if(/RateLimit/.test(code))dbL('dl-w','   Hint: 200 credits/day limit hit.');if(/InvalidApiKey|Forbidden/.test(code))dbL('dl-w','   Hint: Check API key at newsdata.io');if(/ParametersMissing/.test(code))dbL('dl-w','   Hint: Query empty — add keywords or select a category.');showErr(`NewsData [${code}]: ${msg}`);document.getElementById('feed').innerHTML=`<div class="empty"><p>API error — see debug console</p></div>`;dbSt('error');return;}
+    dbL('dl-d',`   status: "${esc(data.status)}" · totalResults: ${esc(data.totalResults)}`);
+    if(data.status==='error'||data.status==='failure'){const msg=data.results?.message||data.message||'Unknown',code=data.code||'';dbL('dl-e',`❌ API error [${esc(code)}]: ${esc(msg)}`);if(/RateLimit/.test(code))dbL('dl-w','   Hint: 200 credits/day limit hit.');if(/InvalidApiKey|Forbidden/.test(code))dbL('dl-w','   Hint: Check API key at newsdata.io');if(/ParametersMissing/.test(code))dbL('dl-w','   Hint: Query empty — add keywords or select a category.');showErr(`NewsData [${code}]: ${msg}`);document.getElementById('feed').innerHTML=`<div class="empty"><p>API error — see debug console</p></div>`;dbSt('error');return;}
     arts=data.results||[];dbL('dl-ok',`✅ ${arts.length} articles received`);
     if(!arts.length){dbL('dl-w','⚠ Zero results — try broader keywords or remove filters.');document.getElementById('feed').innerHTML=`<div class="empty"><p>No articles — try broader filters</p></div>`;dbSt('ok');return;}
     const srcs=[...new Set(arts.map(a=>a.source_id||'?'))];
-    dbL('dl-d',`   Sources: ${srcs.slice(0,5).join(', ')}${srcs.length>5?' +more':''}`);
+    dbL('dl-d',`   Sources: ${esc(srcs.slice(0,5).join(', '))}${srcs.length>5?' +more':''}`);
     activeTab='all';renderStats();buildTabs();renderFeed();dbL('dl-ok','✅ Dashboard rendered');dbSt('ok');
   }catch(e){
-    dbL('dl-e',`❌ ${e.name}: ${e.message}`);
+    dbL('dl-e',`❌ ${esc(e.name)}: ${esc(e.message)}`);
     if(/fetch|network/i.test(e.message)){dbL('dl-w','   1. Running from file://? → python -m http.server 8080');dbL('dl-w','   2. Check internet connection');dbL('dl-w','   3. Visit newsdata.io in a new tab to verify');}
     showErr(`${e.name}: ${e.message} — See debug console.`);
     document.getElementById('feed').innerHTML=`<div class="empty"><p>Connection failed — see debug console</p></div>`;
